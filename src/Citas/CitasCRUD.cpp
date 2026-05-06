@@ -15,9 +15,30 @@ class CitasCRUD
 private:
     const string ARCHIVO = "citas.bin"; // Nombre para el archivo binario
 
+    int generarSiguienteId() // Calcula el siguiente ID disponible
+    {
+        ifstream documento(ARCHIVO, ios::binary | ios::ate); // Leer datos del documento
+
+        if (!documento || documento.tellg() == 0) // Si no existe el archivo o esta vacio es 1
+            return 1;
+
+        int tamanoArchivo = documento.tellg();         // Posicion del ultimo registro registro
+        documento.seekg(tamanoArchivo - sizeof(Cita)); // Ir a posicion del ultimo objeto
+
+        Cita ultimaCita;
+
+        documento.read((char *)&ultimaCita, sizeof(Cita)); // Leer documento
+
+        documento.close(); // Cerrar documento
+
+        return ultimaCita.idCita + 1; // Nuevo id de cita
+    }
+
 public:
     void crear(Cita nuevaCita) // Metodo para crear nueva cita
     {
+        nuevaCita.idCita = generarSiguienteId(); // Crear el Id automaticamente
+
         ofstream documento(ARCHIVO, ios::binary | ios::app); // Escribir en archivo
 
         if (documento)
@@ -26,6 +47,7 @@ public:
             documento.close(); // Cerrar documento
             cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
                  << "    Cita guardada exitosamente\n"
+                 << "     Id: " << nuevaCita.idCita
                  << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
         }
         else
