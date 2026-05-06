@@ -1,5 +1,6 @@
 #include <iostream>
-#include "../Citas/MenuCitas.cpp" //Menu para citas
+#include "../Citas/MenuCitas.cpp"        //Menu para citas
+#include "../Vehiculo/MenuVehiculos.cpp" //Menu para vehiculo
 
 using namespace std;
 
@@ -41,7 +42,7 @@ public:
                 }
                 case 2: // Catalogo para Vehiculos
                 {
-                    /*Logica para catalogo*/
+                    menuVehiculos(); // Llamar metodo para vehiculos
                     break;
                 }
                 case 3: // Catalogo para Citas
