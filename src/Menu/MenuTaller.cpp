@@ -1,6 +1,7 @@
 #include <iostream>
 #include "../Citas/MenuCitas.cpp"        //Menu para citas
 #include "../Vehiculo/MenuVehiculos.cpp" //Menu para vehiculo
+#include "../Cliente/MenuCliente.cpp"    //Menu para Clientes
 
 using namespace std;
 
@@ -37,7 +38,7 @@ public:
                 }
                 case 1: // Catalogo para clientes
                 {
-                    /*Logica para catalogo*/
+                    menuClientes(); // Llamar metodo para menu de clientes
                     break;
                 }
                 case 2: // Catalogo para Vehiculos
