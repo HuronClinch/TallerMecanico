@@ -9,91 +9,150 @@ class MenuCitas
 private:
     CitasCRUD CRUD; // Crud para Citas
 
+    void limpiar() // Limpiar la entrada en caso de error
+    {
+        if (cin.fail())
+        {
+            cin.clear();            // Limpia el error
+            cin.ignore(1000, '\n'); // Descarta error
+            throw invalid_argument("Entrada invalida. Se esperaba un dato numerico.");
+        }
+    }
+
     void menuCrear() // Ingresar datos para nueva cita
     {
-        Cita cita; // Objeto de cita
+        try
+        {
+            Cita cita; // Objeto de cita
 
-        cout << "\n\n\n~~~~~~ Crear nueva cita ~~~~~~\n"
-             << " Ingrese los siguintes datos:\n";
-        cout << "  ID Cita: ";
-        cin >> cita.idCita;
-        cout << "   ID Cliente: ";
-        cin >> cita.idCliente;
-        cout << "   Placa: ";
-        cin >> cita.placa;
-        cout << "   Fecha: ";
-        cin >> cita.fecha;
-        cout << "   Estado: ";
-        cin >> cita.estado;
-        cout << "   Costo: ";
-        cin >> cita.costo;
+            cout << "\n\n\n~~~~~~ Crear nueva cita ~~~~~~\n"
+                 << " Ingrese los siguintes datos:\n";
 
-        CRUD.crear(cita); // Crear objeto
+            cout << "   ID Cliente: ";
+            cin >> cita.idCliente;
+            limpiar(); // Limpiar la entrada
+            cout << "   Placa: ";
+            cin >> cita.placa;
+            cout << "   Fecha (dd/mm/aaaa): ";
+            cin >> cita.fecha;
+            cout << "   Descripcion del problema: ";
+            cin.ignore(); // Limpiar
+            cin.getline(cita.descripcion, 100);
+            cout << "   Estado: ";
+            cin >> cita.estado;
+            cout << "   Costo: ";
+            cin >> cita.costo;
+            limpiar(); // Limpiar la entrada
+
+            CRUD.crear(cita); // Crear objeto
+        }
+        catch (const exception &e)
+        {
+            cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+                 << "       !!!Error en datos!!!\n"
+                 << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        }
     }
 
     void menuBuscar() // Buscar todas las citas
     {
-        int id;
-        cout << "\n\n\n~~~~~~~ Buscar cita ~~~~~~~\n"
-             << "   Ingrese ID a buscar: ";
-        cin >> id;
+        try
+        {
+            int id;
+            cout << "\n\n\n~~~~~~~ Buscar cita ~~~~~~~\n"
+                 << "   Ingrese ID a buscar: ";
+            if (!(cin >> id))
+            {
+                limpiar(); // Limpiar la entrada
+            }
 
-        Cita cita = CRUD.buscarPorId(id); // Objeto de cita encontrado
+            Cita cita = CRUD.buscarPorId(id); // Objeto de cita encontrado
 
-        if (cita.idCita != -1) // Si se encontro cita
-            cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
-                 << "    La cita fue encontrada\n "
-                 << "       Placa: " << cita.placa << endl
-                 << "       Fecha: " << cita.fecha << endl
-                 << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
-        else // No eciste cita
-            cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~\n"
-                 << "    No existe la cita\n"
-                 << "~~~~~~~~~~~~~~~~~~~~~~~~";
+            if (cita.idCita != -1) // Si se encontro cita
+                cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+                     << "    La cita fue encontrada\n "
+                     << "       Placa: " << cita.placa << endl
+                     << "       Fecha: " << cita.fecha << endl
+                     << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+            else // No eciste cita
+                cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~\n"
+                     << "    No existe la cita\n"
+                     << "~~~~~~~~~~~~~~~~~~~~~~~~";
+        }
+        catch (const exception &e)
+        {
+            cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+                 << "       !!!Error en datos!!!\n"
+                 << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        }
     }
 
     void editarCita() // Editar a usario por id
     {
-        int id;
-
-        cout << "\n\n\n~~~~~~~~~~~~~ Editar cita ~~~~~~~~~~~~~\n"
-             << "   Ingrese ID de la cita a editar: ";
-        cin >> id;
-
-        Cita cita = CRUD.buscarPorId(id); // Objeto de cita
-
-        if (cita.idCita != -1) // Si de encuentra cita
+        try
         {
-            cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
-                 << "    Editando Cita " << id << endl
-                 << "       Nuevo Estado: ";
-            cin >> cita.estado;
-            cout << "       Nuevo Costo: ";
-            cin >> cita.costo;
+            int id;
 
-            CRUD.editar(cita); // Guardar los cambios
+            cout << "\n\n\n~~~~~~~~~~~~~ Editar cita ~~~~~~~~~~~~~\n"
+                 << "   Ingrese ID de la cita a editar: ";
+            if (!(cin >> id))
+            {
+                limpiar(); // Limpiar la entrada
+            }
+            Cita cita = CRUD.buscarPorId(id); // Objeto de cita
 
-            cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
-                 << "    La cita se actualizo corectamente\n"
-                 << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+            if (cita.idCita != -1) // Si de encuentra cita
+            {
+                cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+                     << "    Editando Cita " << id << endl
+                     << "       Nuevo Estado: ";
+                cin >> cita.estado;
+                limpiar(); // Limpiar la entrada
+                cout << "       Nuevo Costo: ";
+                cin >> cita.costo;
+                limpiar(); // Limpiar la entrada
+
+                CRUD.editar(cita); // Guardar los cambios
+
+                cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+                     << "    La cita se actualizo corectamente\n"
+                     << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+            }
+            else
+                cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+                     << "          La cita\n"
+                     << "   Cita no fue encontrada"
+                     << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
         }
-        else
-            cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
-                 << "          La cita\n"
-                 << "   Cita no fue encontrada"
-                 << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+        catch (const exception &e)
+        {
+            cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+                 << "       !!!Error en datos!!!\n"
+                 << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        }
     }
 
     void eliminarCita() // Eliminar
     {
-        int id;
+        try
+        {
+            int id;
 
-        cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~\n"
-             << "   Eliminando Cita " << id << endl
-             << "   ID a eliminar:";
-        cin >> id;
-
-        CRUD.eliminar(id); // Eliminar cita por id
+            cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~\n"
+                 << "   Eliminando Cita " << id << endl
+                 << "   ID a eliminar:";
+            if (!(cin >> id))
+            {
+                limpiar(); // Limpiar la entrada
+            }
+            CRUD.eliminar(id); // Eliminar cita por id
+        }
+        catch (const exception &e)
+        {
+            cout << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+                 << "       !!!Error en datos!!!\n"
+                 << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
+        }
     }
 
 public:
@@ -112,6 +171,7 @@ public:
                  << "   0. Volver\n"
                  << "   Opcion: ";
             cin >> opcion;
+
             try
             {
                 int temp = stoi(opcion); // Canvertir el texto a numero
