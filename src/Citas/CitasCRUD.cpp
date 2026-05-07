@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
-#include "Cita.h" //Estructura de Citas
+#include <stdexcept> // Necesario para runtime_error
+#include "Cita.h"    //Estructura de Citas
 
 using namespace std;
 
@@ -48,7 +49,7 @@ public:
             cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
                  << "    Cita guardada exitosamente\n"
                  << "     Id: " << nuevaCita.idCita
-                 << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+                 << "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
         }
         else
         {
@@ -90,8 +91,16 @@ public:
     Cita buscarPorId(int id) // Metodo para buscar por id
     {
         ifstream documento(ARCHIVO, ios::binary); // Leer datos del documento
-        Cita tmp;                                 // Cita temporal para visualizar
-        tmp.idCita = -1;                          // Si no se encuentra cita
+
+        if (!documento) // Si no existe el archivo
+        {
+            cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+                 << "       No hay registros\n"
+                 << "    o el archivo no existe\n"
+                 << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+        }
+
+        Cita tmp; // Cita temporal para visualizar
 
         while (documento.read((char *)&tmp, sizeof(Cita))) // Leer documento
         {
@@ -136,6 +145,8 @@ public:
             }
         }
 
+        documento.close(); // Cerrar documento
+
         if (encontrado)
             cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
                  << "    La cita fue actualizada exitosamente\n"
@@ -151,7 +162,17 @@ public:
 
     void eliminar(int id) // Metodo para eliminar por id
     {
-        ifstream documento(ARCHIVO, ios::binary);       // Leer datos del documento
+        ifstream documento(ARCHIVO, ios::binary); // Leer datos del documento
+
+        if (!documento) // Si no existe el archivo
+        {
+            cout << "\n\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+                 << "       No hay registros\n"
+                 << "    o el archivo no existe\n"
+                 << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+            return;
+        }
+
         ofstream tmpDocumento("temp.bin", ios::binary); // Escrir datos del documento
         Cita tmp;                                       // Cita temporal para visualizar
 
@@ -162,7 +183,6 @@ public:
             if (tmp.idCita != id) // Si encontramos cita
             {
                 tmpDocumento.write((char *)&tmp, sizeof(Cita));
-                // tmpDocumento.write(reinterpret_cast<char *>(&tmp), sizeof(Cita));
             }
             else // Si se encontro, solo se salta
             {
